@@ -24,9 +24,15 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
+    
     const user = await User.findOne({email: req.body.email})
-    if(!user) return res.status(401).json("User is not exist !")
-
+    if(!user) return res.status(404).json("User is not exist !")
+    
+    const admin = req.query.admin;
+    if(admin) {
+      if(user.role !== "producer") return res.status(401).json("Not authentication");
+    }
+    
     const bytes = CryptoJS.AES.decrypt(user.password, env.SECRET_KEY);
     const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 

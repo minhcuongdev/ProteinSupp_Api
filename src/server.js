@@ -8,6 +8,8 @@ import userRoute from "*/routes/user"
 import productRoute from "*/routes/product"
 import cartRoute from "*/routes/cart"
 import addressRoute from "*/routes/address"
+import billRoute from "*/routes/bill"
+import commentRoute from "*/routes/comment"
 
 mongoose.connect(env.MONGODB_URI || process.env.MONGODB_URI,
   {
@@ -33,6 +35,8 @@ mongoose.connect(env.MONGODB_URI || process.env.MONGODB_URI,
     app.use("/api/products/", productRoute)
     app.use("/api/carts", cartRoute)
     app.use("/api/addresses", addressRoute)
+    app.use("/api/bills", billRoute)
+    app.use("/api/comments", commentRoute)
 
     app.get('/', (req, res) => {
         res.status(200).send("ACCESS SERVER")
