@@ -16,7 +16,7 @@ export const createComment = async (req, res) => {
 export const getComment = async (req, res) => {
   try {
     const limit = req.query.limit || 0;
-    const productId = req.body.productId;
+    const productId = req.query.productId;
 
     const comments = await Comment.find({productIds: { $in: [productId] } }, null ,{limit: limit});
     return res.status(200).json(comments)

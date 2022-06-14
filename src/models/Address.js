@@ -20,6 +20,10 @@ const AddressSchema = new Schema(
       type: String,
       require: true,
     },
+    addressDefault: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

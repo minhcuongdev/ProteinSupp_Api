@@ -26,17 +26,17 @@ export const login = async (req, res) => {
   try {
     
     const user = await User.findOne({email: req.body.email})
-    if(!user) return res.status(404).json("User is not exist !")
+    if(!user) return res.status(404).json("Incorrect email or password !")
     
     const admin = req.query.admin;
     if(admin) {
-      if(user.role !== "producer") return res.status(401).json("Not authentication");
+      if(user.role !== "producer") return res.status(401).json("Not authorization");
     }
     
     const bytes = CryptoJS.AES.decrypt(user.password, env.SECRET_KEY);
     const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 
-    if(originalPassword !== req.body.password) return res.status(403).json("Wrong email or password !")
+    if(originalPassword !== req.body.password) return res.status(403).json("Incorrect email or password !")
 
     const { password, ...info } = user._doc;
 

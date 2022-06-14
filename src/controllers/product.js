@@ -9,6 +9,21 @@ export const getAllProduct = async (req, res) => {
   }
 }
 
+export const deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const deleteProduct = await Product.findByIdAndDelete(productId);
+
+    if(deleteProduct) return  res.status(200).json("Delete product successfully");
+
+    return res.status(404).json("Product not exist")
+
+  } catch (error) {
+    res.status(500).json(error)
+  }
+}
+
 export const createProduct = async (req, res) => {
   try {
     const newProduct = new Product(req.body);

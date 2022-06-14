@@ -15,6 +15,10 @@ const BillSchema = new Schema({
     type: String,
     default: "",
   },
+  dateOrder:{
+    type: String,
+    default: ""
+  },
   receivedUser: {
     type: String,
     required: true,
@@ -22,6 +26,10 @@ const BillSchema = new Schema({
   phoneReceivedUser: {
     type: String,
     default: "",
+  },
+  dateReceive: {
+    type: String,
+    default:""
   },
   address: {
     type: String,

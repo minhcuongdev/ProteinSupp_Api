@@ -21,7 +21,8 @@ export const createAddress = async (req, res) => {
       userId: user._id,
       address: req.body.address,
       nameReceivedUser: req.body.nameReceivedUser,
-      numberPhone: req.body.numberPhone
+      numberPhone: req.body.numberPhone,
+      addressDefault: req.body.addressDefault
     })
 
     const saveAddress = await newAddress.save();

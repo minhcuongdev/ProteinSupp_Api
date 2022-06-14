@@ -21,7 +21,7 @@ const ProductSchema = new Schema({
   },
   typeProduct: {
     type: Array,
-    default: []
+    default: ["Protein & Gain weight"]
   },
   productId: {
     type: String,

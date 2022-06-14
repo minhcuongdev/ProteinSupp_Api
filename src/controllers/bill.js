@@ -18,15 +18,21 @@ export const createBill = async (req, res) => {
 export const getAllBill = async (req, res) => {
   try {
     const user = req.user;
+    const delivered = req.query.delivered;
 
     if(user.role === "producer") {
       const bills = await Bill.find();
       return res.status(200).json(bills);
     }
 
-    const bills = await Bill.find({userId: user._id})
-    return res.status(200).json(bills)
-
+    if(delivered) {
+      const bills = await Bill.find({userId: user._id, status: "Delivered"})
+      return res.status(200).json(bills)
+    } else {
+      const bills = await Bill.find({userId: user._id, cancel: false})
+      return res.status(200).json(bills)
+    }
+    
   } catch (error) {
     res.status(500).json(error)
   }
