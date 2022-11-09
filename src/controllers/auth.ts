@@ -26,6 +26,7 @@ export const register = async (req: TypedRequest<{}, IUser>, res: Response) => {
       username: req.body.username,
       email: req.body.email,
       password: hashPassword,
+      phoneNo: req.body.phoneNo,
     });
 
     const user = await newUser.save();
