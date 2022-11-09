@@ -1,8 +1,9 @@
+import IUser from "interfaces/IUser";
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const UserSchema = new Schema(
+const UserSchema = new Schema<IUser>(
   {
     username: {
       type: String,
@@ -10,8 +11,8 @@ const UserSchema = new Schema(
     },
     email: {
       type: String,
-      required:  true,
-      unique: true
+      required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -23,11 +24,11 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      default: "customer"
+      default: "customer",
     },
     birthday: {
       type: String,
-      default:""
+      default: "",
     },
     gender: {
       type: String,
@@ -35,16 +36,16 @@ const UserSchema = new Schema(
     },
     phoneNo: {
       type: String,
-      default: ""
+      default: "",
     },
     address: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model('User', UserSchema)
+const User = mongoose.model<IUser>("User", UserSchema);
 
-export default User
+export default User;
