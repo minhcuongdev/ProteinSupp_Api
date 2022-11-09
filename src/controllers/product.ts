@@ -1,30 +1,31 @@
 import Product from "../models/Product";
+import { Request, Response } from "express";
 
-export const getAllProduct = async (req, res) => {
+export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const products = await Product.find();
-    res.status(200).json(products)
+    res.status(200).json(products);
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
-}
+};
 
-export const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const productId = req.params.id;
 
     const deleteProduct = await Product.findByIdAndDelete(productId);
 
-    if(deleteProduct) return  res.status(200).json("Delete product successfully");
+    if (deleteProduct)
+      return res.status(200).json("Delete product successfully");
 
-    return res.status(404).json("Product not exist")
-
+    return res.status(404).json("Product not exist");
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
-}
+};
 
-export const createProduct = async (req, res) => {
+export const createProduct = async (req: Request, res: Response) => {
   try {
     const newProduct = new Product(req.body);
 
@@ -36,7 +37,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const updateProduct = async (req, res) => {
+export const updateProduct = async (req: Request, res: Response) => {
   try {
     const productId = req.params.id;
 
@@ -48,7 +49,7 @@ export const updateProduct = async (req, res) => {
       const updateProduct = await Product.findByIdAndUpdate(
         productId,
         {
-          $set: req.body
+          $set: req.body,
         },
         { new: true }
       );
