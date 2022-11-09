@@ -4,16 +4,28 @@ import CryptoJS from "crypto-js";
 import { env } from "../configs/environments";
 import jwt from "jsonwebtoken";
 import RefreshToken from "../models/RefreshToken";
+import TypedRequest from "interfaces/TypedRequest";
+import IUser from "interfaces/IUser";
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: TypedRequest<{}, IUser>, res: Response) => {
   try {
+    const userExistByEmail = await User.findOne({ email: req.body.email });
+    if (userExistByEmail)
+      return res.status(401).json(`${req.body.email} has been register`);
+
+    const userExistByPhone = await User.findOne({ phoneNo: req.body.phoneNo });
+    if (userExistByPhone)
+      return res.status(401).json(`${req.body.email} has been register`);
+
+    const hashPassword = CryptoJS.AES.encrypt(
+      req.body.password,
+      env.SECRET_KEY || ""
+    ).toString();
+
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
-      password: CryptoJS.AES.encrypt(
-        req.body.password,
-        env.SECRET_KEY || ""
-      ).toString(),
+      password: hashPassword,
     });
 
     const user = await newUser.save();
@@ -26,7 +38,10 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: TypedRequest<{ admin: string }, IUser>,
+  res: Response
+) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) return res.status(404).json("Incorrect email or password !");
@@ -76,7 +91,10 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshToken = async (req: Request, res: Response) => {
+export const refreshToken = async (
+  req: TypedRequest<{}, { refreshToken: string }>,
+  res: Response
+) => {
   const refreshToken = req.body.refreshToken;
 
   if (!refreshToken) return res.status(401).json("You are not authenticated!");
