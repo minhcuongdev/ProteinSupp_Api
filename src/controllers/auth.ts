@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import RefreshToken from "../models/RefreshToken";
 import TypedRequest from "interfaces/TypedRequest";
 import IUser from "interfaces/IUser";
+import IToken from "interfaces/IToken";
 
 export const register = async (req: TypedRequest<{}, IUser>, res: Response) => {
   try {
@@ -44,8 +45,12 @@ export const login = async (
   res: Response
 ) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(404).json("Incorrect email or password !");
+    const user = await User.findOne({
+      $or: [{ email: req.body.email }, { phoneNo: req.body.phoneNo }],
+    });
+
+    if (!user)
+      return res.status(404).json("Incorrect email/phone or password !");
 
     const admin = req.query.admin;
     if (admin) {
@@ -75,7 +80,67 @@ export const login = async (
   }
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const loginSocialNetwork = async (
+  req: TypedRequest<{}, IUser>,
+  res: Response
+) => {
+  try {
+    const user = await User.findOne({
+      $or: [{ email: req.body.email }, { phoneNo: req.body.phoneNo }],
+    })
+      .where("role")
+      .equals("customer");
+
+    if (user)
+      return res.status(401).json("email or phone has been exist in system");
+
+    const userSocialNetwork = await User.findOne({
+      $or: [{ email: req.body.email }, { phoneNo: req.body.phoneNo }],
+    })
+      .where("role")
+      .equals("customerSocialNetwork");
+
+    if (!userSocialNetwork) {
+      const newUserSocialNetwork = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: "null",
+        phoneNo: req.body.phoneNo,
+        role: "customerSocialNetwork",
+      });
+
+      const user = await newUserSocialNetwork.save();
+
+      const { password, ...info } = user._doc;
+
+      const accessToken = jwt.sign(info, env.SECRET_JWT_TOKEN || "", {
+        expiresIn: "3d",
+      });
+      const refreshToken = jwt.sign(info, env.SECRET_REFRESH_JWT_TOKEN || "");
+
+      const savedRefreshToken = new RefreshToken({ refreshToken });
+      await savedRefreshToken.save();
+
+      return res.status(200).json({ ...info, accessToken, refreshToken });
+    }
+
+    const { password, ...info } = userSocialNetwork._doc;
+
+    const accessToken = jwt.sign(info, env.SECRET_JWT_TOKEN || "", {
+      expiresIn: "3d",
+    });
+    const refreshToken = jwt.sign(info, env.SECRET_REFRESH_JWT_TOKEN || "");
+
+    const savedRefreshToken = new RefreshToken({ refreshToken });
+    await savedRefreshToken.save();
+
+    return res.status(200).json({ ...info, accessToken, refreshToken });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const logout = async (req: TypedRequest<{}, IToken>, res: Response) => {
   const refreshToken = req.body.refreshToken;
 
   try {
@@ -93,7 +158,7 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const refreshToken = async (
-  req: TypedRequest<{}, { refreshToken: string }>,
+  req: TypedRequest<{}, IToken>,
   res: Response
 ) => {
   const refreshToken = req.body.refreshToken;
@@ -101,7 +166,9 @@ export const refreshToken = async (
   if (!refreshToken) return res.status(401).json("You are not authenticated!");
 
   try {
-    const verifyRefreshToken = await RefreshToken.findOne({ refreshToken });
+    const verifyRefreshToken = await RefreshToken.findOne({
+      refreshToken: refreshToken,
+    });
 
     if (verifyRefreshToken) {
       jwt.verify(
