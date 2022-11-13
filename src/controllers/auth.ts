@@ -106,6 +106,7 @@ export const loginSocialNetwork = async (
         email: req.body.email,
         password: "null",
         phoneNo: req.body.phoneNo,
+        profilePicture: req.body.profilePicture,
         role: "customerSocialNetwork",
       });
 
