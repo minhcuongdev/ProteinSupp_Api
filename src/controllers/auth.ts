@@ -94,9 +94,7 @@ export const loginSocialNetwork = async (
     if (user)
       return res.status(401).json("email or phone has been exist in system");
 
-    const userSocialNetwork = await User.findOne({
-      $or: [{ email: req.body.email }, { phoneNo: req.body.phoneNo }],
-    })
+    const userSocialNetwork = await User.findOne({ email: req.body.email })
       .where("role")
       .equals("customerSocialNetwork");
 
