@@ -1,10 +1,29 @@
 import Product from "../models/Product";
 import { Request, Response } from "express";
+import TypedRequest from "interfaces/TypedRequest";
 
-export const getAllProduct = async (req: Request, res: Response) => {
+export const getAllProduct = async (
+  req: TypedRequest<{ skip: number; limit: number }, {}, {}>,
+  res: Response
+) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find()
+      .sort({ date: -1 })
+      .skip(req.query.skip || 0)
+      .limit(req.query.limit || 0);
     res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getProductById = async (
+  req: TypedRequest<{}, {}, { id: string }>,
+  res: Response
+) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    res.status(200).json(product);
   } catch (error) {
     res.status(500).json(error);
   }

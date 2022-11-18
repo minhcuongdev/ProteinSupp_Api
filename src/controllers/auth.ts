@@ -1,14 +1,17 @@
-import User from "../models/User";
-import { Request, Response } from "express";
 import CryptoJS from "crypto-js";
-import { env } from "../configs/environments";
-import jwt from "jsonwebtoken";
-import RefreshToken from "../models/RefreshToken";
-import TypedRequest from "interfaces/TypedRequest";
-import IUser from "interfaces/IUser";
+import { Response } from "express";
 import IToken from "interfaces/IToken";
+import IUser from "interfaces/IUser";
+import TypedRequest from "interfaces/TypedRequest";
+import jwt from "jsonwebtoken";
+import { env } from "../configs/environments";
+import RefreshToken from "../models/RefreshToken";
+import User from "../models/User";
 
-export const register = async (req: TypedRequest<{}, IUser>, res: Response) => {
+export const register = async (
+  req: TypedRequest<{}, IUser, {}>,
+  res: Response
+) => {
   try {
     const userExistByEmail = await User.findOne({ email: req.body.email });
     if (userExistByEmail)
@@ -41,7 +44,7 @@ export const register = async (req: TypedRequest<{}, IUser>, res: Response) => {
 };
 
 export const login = async (
-  req: TypedRequest<{ admin: string }, IUser>,
+  req: TypedRequest<{ admin: string }, IUser, {}>,
   res: Response
 ) => {
   try {
@@ -67,7 +70,7 @@ export const login = async (
     const { password, ...info } = user._doc;
 
     const accessToken = jwt.sign(info, env.SECRET_JWT_TOKEN || "", {
-      expiresIn: "3d",
+      expiresIn: "7d",
     });
     const refreshToken = jwt.sign(info, env.SECRET_REFRESH_JWT_TOKEN || "");
 
@@ -81,7 +84,7 @@ export const login = async (
 };
 
 export const loginSocialNetwork = async (
-  req: TypedRequest<{}, IUser>,
+  req: TypedRequest<{}, IUser, {}>,
   res: Response
 ) => {
   try {
@@ -113,7 +116,7 @@ export const loginSocialNetwork = async (
       const { password, ...info } = user._doc;
 
       const accessToken = jwt.sign(info, env.SECRET_JWT_TOKEN || "", {
-        expiresIn: "3d",
+        expiresIn: "7d",
       });
       const refreshToken = jwt.sign(info, env.SECRET_REFRESH_JWT_TOKEN || "");
 
@@ -126,7 +129,7 @@ export const loginSocialNetwork = async (
     const { password, ...info } = userSocialNetwork._doc;
 
     const accessToken = jwt.sign(info, env.SECRET_JWT_TOKEN || "", {
-      expiresIn: "3d",
+      expiresIn: "7d",
     });
     const refreshToken = jwt.sign(info, env.SECRET_REFRESH_JWT_TOKEN || "");
 
@@ -139,7 +142,10 @@ export const loginSocialNetwork = async (
   }
 };
 
-export const logout = async (req: TypedRequest<{}, IToken>, res: Response) => {
+export const logout = async (
+  req: TypedRequest<{}, IToken, {}>,
+  res: Response
+) => {
   const refreshToken = req.body.refreshToken;
 
   try {
@@ -157,7 +163,7 @@ export const logout = async (req: TypedRequest<{}, IToken>, res: Response) => {
 };
 
 export const refreshToken = async (
-  req: TypedRequest<{}, IToken>,
+  req: TypedRequest<{}, IToken, {}>,
   res: Response
 ) => {
   const refreshToken = req.body.refreshToken;
@@ -179,7 +185,7 @@ export const refreshToken = async (
           const { iat, ...info } = data;
 
           const newAccessToken = jwt.sign(info, env.SECRET_JWT_TOKEN || "", {
-            expiresIn: "3d",
+            expiresIn: "7d",
           });
           const newRefreshToken = jwt.sign(
             info,
