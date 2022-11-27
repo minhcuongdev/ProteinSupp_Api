@@ -46,7 +46,7 @@ export const createCart = async (req: Request, res: Response) => {
       userId: user._id,
       productId: req.body.productId,
       quality: req.body.quality,
-      imageProduct: product.imageProduct,
+      imageProduct: product.imageProducts?.[0] || "",
       nameProduct: product.name,
       priceProduct: product.price,
     });
