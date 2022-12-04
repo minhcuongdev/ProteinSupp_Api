@@ -23,8 +23,10 @@ export const getProductById = async (
 ) => {
   try {
     const product = await Product.findById(req.params.id);
+
     const similarProducts = await Product.find({
-      id: { $ne: product.id },
+      _id: { $ne: product._id },
+      typeProduct: { $in: [product.typeProduct[0]] },
     }).limit(5);
     res.status(200).json({ ...product._doc, similarProducts: similarProducts });
   } catch (error) {

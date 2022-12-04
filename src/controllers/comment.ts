@@ -3,7 +3,15 @@ import { Request, Response } from "express";
 
 export const createComment = async (req: Request, res: Response) => {
   try {
-    const newComment = new Comment(req.body);
+    const user = req.user;
+
+    const newComment = new Comment({
+      productIds: req.body.productIds,
+      username: user.username,
+      profilePicture: user.profilePicture,
+      comment: req.body.comment,
+      point: req.body.point,
+    });
 
     const saveComment = await newComment.save();
 
@@ -16,13 +24,13 @@ export const createComment = async (req: Request, res: Response) => {
 export const getComment = async (req: Request, res: Response) => {
   try {
     const limit = Number(req.query.limit) || 0;
+    const skip = Number(req.query.skip) || 0;
+
     const productId = req.query.productId;
 
-    const comments = await Comment.find(
-      { productIds: { $in: [productId] } },
-      null,
-      { limit: limit }
-    );
+    const comments = await Comment.find({ productIds: { $in: [productId] } })
+      .skip(skip)
+      .limit(limit);
 
     return res.status(200).json(comments);
   } catch (error) {
