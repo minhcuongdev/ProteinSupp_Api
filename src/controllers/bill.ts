@@ -1,6 +1,6 @@
 import Bill from "../models/Bill";
 import { Request, Response } from "express";
-import Cart from "models/Cart";
+import Cart from "../models/Cart";
 
 export const createBill = async (req: Request, res: Response) => {
   try {
