@@ -26,11 +26,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "create-build": "mkdir build",
-    "build-babel": "babel src --extensions \".js,.ts\" --out-dir build --copy-files --no-copy-ignored",
+    "build-babel": "babel src --extensions \".js,.ts\" --out-dir public --copy-files --no-copy-ignored",
     "build": "npm run build-babel",
     "production": "npm run build && node ./build/src/server.ts",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
-    "start": "node build/server.js"
+    "start": "node public/server.js"
   },
   "keywords": [],
   "author": "",
