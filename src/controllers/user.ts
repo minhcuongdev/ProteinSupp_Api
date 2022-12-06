@@ -44,7 +44,7 @@ export const updateInfoUser = async (req: Request, res: Response) => {
       ).toString();
 
       try {
-        const updateUser = await User.findByIdAndUpdate(
+        const updateUser: any = await User.findByIdAndUpdate(
           userId,
           {
             password: newPasswords,

@@ -1,5 +1,6 @@
 import Bill from "../models/Bill";
 import { Request, Response } from "express";
+import Cart from "../models/Cart";
 
 export const createBill = async (req: Request, res: Response) => {
   try {
@@ -8,6 +9,14 @@ export const createBill = async (req: Request, res: Response) => {
     const newBill = new Bill({ userId: user._id, ...req.body });
 
     const saveBill = await newBill.save();
+
+    const productsCart = req.body.products;
+
+    await Promise.all(
+      productsCart.map(async (productCart: any) => {
+        return await Cart.findByIdAndDelete(productCart._id);
+      })
+    );
 
     res.status(201).json(saveBill);
   } catch (error) {
@@ -18,15 +27,20 @@ export const createBill = async (req: Request, res: Response) => {
 export const getAllBill = async (req: Request, res: Response) => {
   try {
     const user = req.user;
-    const delivered = req.query.delivered;
+
+    const status = req.query.status;
 
     if (user.role === "producer") {
       const bills = await Bill.find();
       return res.status(200).json(bills);
     }
 
-    if (delivered) {
-      const bills = await Bill.find({ userId: user._id, status: "Delivered" });
+    if (status) {
+      const bills = await Bill.find({
+        userId: user._id,
+        status: status,
+        cancel: false,
+      });
       return res.status(200).json(bills);
     } else {
       const bills = await Bill.find({ userId: user._id, cancel: false });
