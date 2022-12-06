@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "engines": {
-    "node": "16.x"
-  },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.17.10",
@@ -27,11 +24,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "create-build": "mkdir build",
-    "build-babel": "babel src --extensions \".js,.ts\" --out-dir public --copy-files --no-copy-ignored",
+    "build-babel": "babel src --extensions \".js,.ts\" --out-dir build --copy-files --no-copy-ignored",
     "build": "npm run build-babel",
     "production": "npm run build && node ./build/src/server.ts",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
-    "start": "node public/server.js"
+    "start": "npm run build && node build/server.js"
   },
   "keywords": [],
   "author": "",
