@@ -3,6 +3,25 @@ import CryptoJS from "crypto-js";
 import { env } from "../configs/environments";
 import { Request, Response } from "express";
 
+export const getInfoUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const user = req.user;
+
+    if (user._id === userId) {
+      const userInfo = await User.findById(userId);
+
+      const { password, ...info } = userInfo?._doc;
+
+      res.status(200).json(info);
+    } else {
+      return res.status(403).json("Forbidden");
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getAllUser = async (req: Request, res: Response) => {
   try {
     const users = await User.find();
@@ -29,6 +48,14 @@ export const updateInfoUser = async (req: Request, res: Response) => {
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json("User not exist");
+
+    const userAllowChange = await User.findOne({
+      $or: [{ email: req.body.email }, { phoneNo: req.body.phoneNo }],
+    });
+
+    if (userAllowChange && userAllowChange._id.toString() !== userId) {
+      return res.status(403).json("Email or Phone is exist in system");
+    }
 
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;

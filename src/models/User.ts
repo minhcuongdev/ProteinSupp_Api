@@ -42,6 +42,18 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: "",
     },
+    province: {
+      type: String,
+      default: "",
+    },
+    district: {
+      type: String,
+      default: "",
+    },
+    commune: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

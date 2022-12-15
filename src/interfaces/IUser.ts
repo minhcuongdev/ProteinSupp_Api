@@ -10,6 +10,9 @@ interface IUser extends Document {
   gender: string;
   phoneNo: string;
   address: string;
+  province: string;
+  district: string;
+  commune: string;
   _doc: any;
 }
 
