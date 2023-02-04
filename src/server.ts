@@ -10,6 +10,8 @@ import cartRoute from "./routes/cart";
 import addressRoute from "./routes/address";
 import billRoute from "./routes/bill";
 import commentRoute from "./routes/comment";
+import conversationsRoute from "./routes/conversations";
+import messagesRoute from "./routes/messages";
 
 mongoose
   .connect(env.MONGODB_URI || process.env.MONGODB_URI || "", {
@@ -38,6 +40,8 @@ const bootApp = () => {
   app.use("/api/addresses", addressRoute);
   app.use("/api/bills", billRoute);
   app.use("/api/comments", commentRoute);
+  app.use("/api/conversations", conversationsRoute);
+  app.use("/api/messages", messagesRoute);
 
   app.get("/", (req, res) => {
     res.status(200).send("ACCESS SERVER");
