@@ -24,6 +24,18 @@ export const createBill = async (req: Request, res: Response) => {
   }
 };
 
+export const getDetailBill = async (req: Request, res: Response) => {
+  try {
+    const billId = req.params.id;
+
+    const bill = await Bill.findById(billId);
+
+    res.status(200).json(bill);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getAllBill = async (req: Request, res: Response) => {
   try {
     const user = req.user;
@@ -31,6 +43,14 @@ export const getAllBill = async (req: Request, res: Response) => {
     const status = req.query.status;
 
     if (user.role === "producer") {
+      if (status) {
+        if (status === "Cancel") {
+          const bills = await Bill.find({ cancel: true });
+          return res.status(200).json(bills);
+        }
+        const bills = await Bill.find({ status: status, cancel: false });
+        return res.status(200).json(bills);
+      }
       const bills = await Bill.find();
       return res.status(200).json(bills);
     }
