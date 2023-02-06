@@ -45,13 +45,19 @@ export const getAllBill = async (req: Request, res: Response) => {
     if (user.role === "producer") {
       if (status) {
         if (status === "Cancel") {
-          const bills = await Bill.find({ cancel: true });
+          const bills = await Bill.find({ cancel: true }).sort({
+            createdAt: -1,
+          });
           return res.status(200).json(bills);
         }
-        const bills = await Bill.find({ status: status, cancel: false });
+        const bills = await Bill.find({ status: status, cancel: false }).sort({
+          createdAt: -1,
+        });
         return res.status(200).json(bills);
       }
-      const bills = await Bill.find();
+      const bills = await Bill.find().sort({
+        createdAt: -1,
+      });
       return res.status(200).json(bills);
     }
 
@@ -60,10 +66,14 @@ export const getAllBill = async (req: Request, res: Response) => {
         userId: user._id,
         status: status,
         cancel: false,
+      }).sort({
+        createdAt: -1,
       });
       return res.status(200).json(bills);
     } else {
-      const bills = await Bill.find({ userId: user._id, cancel: false });
+      const bills = await Bill.find({ userId: user._id, cancel: false }).sort({
+        createdAt: -1,
+      });
       return res.status(200).json(bills);
     }
   } catch (error) {
