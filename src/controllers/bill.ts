@@ -24,6 +24,18 @@ export const createBill = async (req: Request, res: Response) => {
   }
 };
 
+export const getDetailBill = async (req: Request, res: Response) => {
+  try {
+    const billId = req.params.id;
+
+    const bill = await Bill.findById(billId);
+
+    res.status(200).json(bill);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getAllBill = async (req: Request, res: Response) => {
   try {
     const user = req.user;
@@ -31,7 +43,21 @@ export const getAllBill = async (req: Request, res: Response) => {
     const status = req.query.status;
 
     if (user.role === "producer") {
-      const bills = await Bill.find();
+      if (status) {
+        if (status === "Cancel") {
+          const bills = await Bill.find({ cancel: true }).sort({
+            createdAt: -1,
+          });
+          return res.status(200).json(bills);
+        }
+        const bills = await Bill.find({ status: status, cancel: false }).sort({
+          createdAt: -1,
+        });
+        return res.status(200).json(bills);
+      }
+      const bills = await Bill.find().sort({
+        createdAt: -1,
+      });
       return res.status(200).json(bills);
     }
 
@@ -40,10 +66,14 @@ export const getAllBill = async (req: Request, res: Response) => {
         userId: user._id,
         status: status,
         cancel: false,
+      }).sort({
+        createdAt: -1,
       });
       return res.status(200).json(bills);
     } else {
-      const bills = await Bill.find({ userId: user._id, cancel: false });
+      const bills = await Bill.find({ userId: user._id, cancel: false }).sort({
+        createdAt: -1,
+      });
       return res.status(200).json(bills);
     }
   } catch (error) {

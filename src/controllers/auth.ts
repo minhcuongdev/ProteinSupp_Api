@@ -58,7 +58,10 @@ export const login = async (
     const admin = req.query.admin;
     if (admin) {
       if (user.role !== "producer")
-        return res.status(401).json("Not authorization");
+        return res.status(401).json("You must login with admin account");
+    } else {
+      if (user.role === "producer")
+        return res.status(401).json("You must login with customer account");
     }
 
     const bytes = CryptoJS.AES.decrypt(user.password, env.SECRET_KEY || "");
