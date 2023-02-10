@@ -8,7 +8,9 @@ export const getAllProduct = async (
 ) => {
   try {
     const products = await Product.find()
-      .sort({ date: -1 })
+      .sort({
+        createdAt: -1,
+      })
       .skip(req.query.skip || 0)
       .limit(req.query.limit || 0);
     res.status(200).json(products);
